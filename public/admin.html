@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTY Chat - Admin Panel</title>
+
+  <!-- NES.css -->
+  <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="/css/app.css">
+
+  <style>
+    body {
+      padding: 1rem;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .admin-header h1 {
+      color: #92cc41;
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .admin-status {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.6rem;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1rem;
+    }
+
+    .admin-section h2 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .question-queue {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .question-admin-item {
+      margin-bottom: 0.75rem;
+    }
+
+    .question-admin-item .content {
+      font-size: 0.65rem;
+      color: #ddd;
+      margin-bottom: 0.5rem;
+      word-break: break-word;
+    }
+
+    .question-admin-item img {
+      max-width: 150px;
+      max-height: 100px;
+      border-radius: 4px;
+      margin-top: 0.3rem;
+    }
+
+    .question-admin-item .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.5rem;
+      color: #888;
+      margin-bottom: 0.5rem;
+    }
+
+    .question-admin-item .actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .drawing-prompts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .prompt-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #212529;
+      padding: 0.5rem;
+      border-radius: 4px;
+      font-size: 0.6rem;
+    }
+
+    .prompt-active {
+      border: 2px solid #92cc41;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .form-row input {
+      flex: 1;
+      font-size: 0.6rem !important;
+      padding: 0.5rem !important;
+    }
+
+    .stats-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-box {
+      background: #212529;
+      border-radius: 4px;
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    .stat-box .value {
+      color: #92cc41;
+      font-size: 1.2rem;
+    }
+
+    .stat-box .label {
+      color: #888;
+      font-size: 0.45rem;
+      margin-top: 0.3rem;
+    }
+
+    .participant-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .participant-card {
+      background: #212529;
+      border-radius: 4px;
+      padding: 0.5rem;
+      font-size: 0.55rem;
+    }
+
+    .participant-card .name {
+      color: #4aa3df;
+      margin-bottom: 0.3rem;
+    }
+
+    .participant-card .stats {
+      color: #888;
+      font-size: 0.45rem;
+    }
+
+    .participant-card.online {
+      border-left: 3px solid #92cc41;
+    }
+
+    .presentation-controls {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .pokemon-control {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Header -->
+    <header class="admin-header">
+      <h1>🎮 OTY Chat Admin</h1>
+      <div class="admin-status">
+        <div class="status-item">
+          <span class="online-dot"></span>
+          <span id="online-count">0</span> online
+        </div>
+        <div class="status-item">
+          <span>🍺</span>
+          <span id="total-drinks">0</span> drinks
+        </div>
+      </div>
+    </header>
+
+    <!-- Presentation Controls -->
+    <section class="admin-section">
+      <h2>Presentation</h2>
+      <div class="presentation-controls">
+        <button class="nes-btn is-success admin-btn" id="btn-start-presentation">
+          ▶ Start
+        </button>
+        <button class="nes-btn is-error admin-btn" id="btn-end-presentation" disabled>
+          ⏹ End
+        </button>
+        <button class="nes-btn is-warning admin-btn" id="btn-spawn-pokemon">
+          🎮 Spawn Pokémon
+        </button>
+      </div>
+      <div class="pokemon-control">
+        <select class="nes-select is-dark" id="pokemon-select" style="font-size: 0.55rem; padding: 0.3rem;">
+          <option value="random">Random Pokemon</option>
+          <option value="1">Bulbasaur</option>
+          <option value="4">Charmander</option>
+          <option value="7">Squirtle</option>
+          <option value="25">Pikachu</option>
+          <option value="39">Jigglypuff</option>
+          <option value="52">Meowth</option>
+          <option value="133">Eevee</option>
+          <option value="143">Snorlax</option>
+          <option value="150">Mewtwo</option>
+          <option value="151">Mew</option>
+        </select>
+        <label style="font-size: 0.5rem; display: flex; align-items: center; gap: 0.3rem;">
+          <input type="checkbox" class="nes-checkbox is-dark" id="force-shiny">
+          <span>Force Shiny ✨</span>
+        </label>
+      </div>
+    </section>
+
+    <div class="admin-grid">
+      <!-- Questions Queue -->
+      <section class="admin-section">
+        <h2>
+          Questions
+          <span style="font-size: 0.6rem; color: #888;" id="question-count">(0)</span>
+        </h2>
+        <div class="question-queue" id="question-queue">
+          <p style="color: #666; font-size: 0.6rem; text-align: center;">No questions yet</p>
+        </div>
+      </section>
+
+      <!-- Drawing Prompts -->
+      <section class="admin-section">
+        <h2>Drawing Prompts</h2>
+        <div class="form-row">
+          <input type="text" class="nes-input is-dark" id="new-prompt-input"
+                 placeholder="Enter drawing prompt...">
+          <button class="nes-btn is-primary admin-btn" id="btn-add-prompt">+</button>
+        </div>
+        <div class="drawing-prompts-list" id="prompts-list">
+          <div class="prompt-item">
+            <span>Draw your favorite food</span>
+            <button class="nes-btn is-success admin-btn" data-prompt="Draw your favorite food">Send</button>
+          </div>
+          <div class="prompt-item">
+            <span>Draw the presenter</span>
+            <button class="nes-btn is-success admin-btn" data-prompt="Draw the presenter">Send</button>
+          </div>
+          <div class="prompt-item">
+            <span>Draw a Pokemon</span>
+            <button class="nes-btn is-success admin-btn" data-prompt="Draw a Pokemon">Send</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Participants -->
+      <section class="admin-section">
+        <h2>
+          Participants
+          <span style="font-size: 0.6rem; color: #888;" id="participant-count">(0)</span>
+        </h2>
+        <div class="stats-summary">
+          <div class="stat-box">
+            <div class="value" id="stat-reactions">0</div>
+            <div class="label">Reactions</div>
+          </div>
+          <div class="stat-box">
+            <div class="value" id="stat-questions">0</div>
+            <div class="label">Questions</div>
+          </div>
+          <div class="stat-box">
+            <div class="value" id="stat-pokemon">0</div>
+            <div class="label">Pokemon</div>
+          </div>
+          <div class="stat-box">
+            <div class="value" id="stat-achievements">0</div>
+            <div class="label">Badges</div>
+          </div>
+        </div>
+        <div class="participant-grid" id="participant-grid">
+          <p style="color: #666; font-size: 0.6rem; grid-column: 1/-1; text-align: center;">
+            No participants yet
+          </p>
+        </div>
+      </section>
+
+      <!-- Recent Activity -->
+      <section class="admin-section">
+        <h2>Recent Activity</h2>
+        <div class="activity-feed" id="activity-feed" style="max-height: 300px; overflow-y: auto;">
+          <p style="color: #666; font-size: 0.6rem; text-align: center;">No activity yet</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

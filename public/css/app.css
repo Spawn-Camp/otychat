@@ -1,0 +1,2038 @@
+/* OtyChat - PEAR-36 Light Mode Theme */
+/* Inspired by FroggyChat & PictoChat */
+
+/* ============================================
+   PEAR-36 COLOR PALETTE
+   ============================================ */
+:root {
+  /* Primary Colors */
+  --lime: #b6d53c;
+  --lime-dark: #71aa34;
+  --lime-light: #d4e88b;
+
+  /* Accent Colors */
+  --coral: #d95763;
+  --orange: #f2a65e;
+  --yellow: #f7e26b;
+  --pink: #d77bba;
+  --cyan: #5fcde4;
+  --blue: #639bff;
+
+  /* Neutrals */
+  --charcoal: #3e3546;
+  --purple-dark: #625565;
+  --purple-mid: #966c6c;
+  --gray: #847e87;
+  --gray-light: #9badb7;
+
+  /* Backgrounds */
+  --cream: #f4f4f4;
+  --white: #ffffff;
+  --mint: #cbdbfc;
+
+  /* Semantic */
+  --bg-main: #c8e6a0;
+  --bg-card: var(--white);
+  --bg-header: var(--lime);
+  --text-primary: var(--charcoal);
+  --text-secondary: var(--purple-dark);
+  --border-color: var(--charcoal);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 16px; /* Increased from 12px for mobile readability */
+  background: var(--bg-main);
+  color: var(--text-primary);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ============================================
+   THEME BACKGROUND PATTERNS (with animations)
+   ============================================ */
+
+/* Meadow - Organic blobs with diagonal drift */
+body.pattern-blobs {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M25 50c0-15 10-25 25-25s25 10 25 25-10 25-25 25S25 65 25 50z' fill='%23a8d84a' fill-opacity='0.4'/%3E%3Cpath d='M60 20c0-10 8-15 15-15s15 5 15 15-8 20-15 20S60 30 60 20z' fill='%23a8d84a' fill-opacity='0.3'/%3E%3Cpath d='M5 80c0-12 8-18 18-18s18 6 18 18-8 15-18 15S5 92 5 80z' fill='%23a8d84a' fill-opacity='0.35'/%3E%3C/svg%3E");
+  background-size: 150px 150px;
+  animation: drift-blobs 12s linear infinite;
+}
+
+@keyframes drift-blobs {
+  0% { background-position: 0 0; }
+  100% { background-position: 150px 150px; }
+}
+
+/* Blossom - Polka dots with gentle diagonal float */
+body.pattern-dots {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='15' cy='15' r='6' fill='%23e8a0b5' fill-opacity='0.5'/%3E%3Ccircle cx='45' cy='45' r='6' fill='%23e8a0b5' fill-opacity='0.5'/%3E%3Ccircle cx='45' cy='15' r='4' fill='%23d590a5' fill-opacity='0.4'/%3E%3Ccircle cx='15' cy='45' r='4' fill='%23d590a5' fill-opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+  animation: float-dots 10s linear infinite;
+}
+
+@keyframes float-dots {
+  0% { background-position: 0 0; }
+  100% { background-position: 60px -60px; }
+}
+
+/* Ocean - Wavy lines flowing horizontally */
+body.pattern-waves {
+  background-image: url("data:image/svg+xml,%3Csvg width='120' height='40' viewBox='0 0 120 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20 Q15 5 30 20 T60 20 T90 20 T120 20' stroke='%2395c0e8' stroke-width='3' fill='none' stroke-opacity='0.5'/%3E%3Cpath d='M0 30 Q15 15 30 30 T60 30 T90 30 T120 30' stroke='%2385b0d8' stroke-width='2' fill='none' stroke-opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 120px 40px;
+  animation: flow-waves 6s linear infinite;
+}
+
+@keyframes flow-waves {
+  0% { background-position: 0 0; }
+  100% { background-position: 120px 0; }
+}
+
+/* Sunset - Zig zags scrolling horizontally */
+body.pattern-zigzag {
+  background-image: url("data:image/svg+xml,%3Csvg width='80' height='40' viewBox='0 0 80 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 L20 10 L40 30 L60 10 L80 30' stroke='%23f0c090' stroke-width='3' fill='none' stroke-opacity='0.5'/%3E%3Cpath d='M0 35 L20 15 L40 35 L60 15 L80 35' stroke='%23e8b080' stroke-width='2' fill='none' stroke-opacity='0.35'/%3E%3C/svg%3E");
+  background-size: 80px 40px;
+  animation: scroll-zigzag 8s linear infinite;
+}
+
+@keyframes scroll-zigzag {
+  0% { background-position: 0 0; }
+  100% { background-position: 80px 0; }
+}
+
+/* Twilight - Stars with slow upward drift */
+body.pattern-stars {
+  background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 8 L22 14 L28 14 L23 18 L25 24 L20 20 L15 24 L17 18 L12 14 L18 14 Z' fill='%23c8b8e0' fill-opacity='0.5'/%3E%3Cpath d='M60 48 L61.5 52 L66 52 L62.5 55 L64 59 L60 56 L56 59 L57.5 55 L54 52 L58.5 52 Z' fill='%23b8a8d0' fill-opacity='0.45'/%3E%3Ccircle cx='55' cy='15' r='2' fill='%23d0c0e8' fill-opacity='0.4'/%3E%3Ccircle cx='15' cy='60' r='1.5' fill='%23d0c0e8' fill-opacity='0.35'/%3E%3C/svg%3E");
+  background-size: 80px 80px;
+  animation: rise-stars 15s linear infinite;
+}
+
+@keyframes rise-stars {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px -80px; }
+}
+
+/* Mobile viewport fix */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  max-width: 500px;
+  margin: 0 auto;
+  background: transparent;
+}
+
+/* ============================================
+   JOIN SCREEN
+   ============================================ */
+.join-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  min-height: 100vh;
+  min-height: 100dvh;
+  gap: 1.5rem;
+}
+
+.join-screen h1 {
+  color: var(--charcoal);
+  text-align: center;
+  font-size: 1.5rem;
+  margin: 0;
+  text-shadow: 3px 3px 0 var(--lime);
+}
+
+.join-screen .subtitle {
+  color: var(--purple-dark);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.join-form {
+  width: 100%;
+  max-width: 300px;
+}
+
+.join-form .nes-field {
+  margin-bottom: 1rem;
+}
+
+.join-form label {
+  color: var(--charcoal);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.join-form input {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+}
+
+.online-count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--lime-dark);
+  font-size: 0.7rem;
+  background: var(--white);
+  padding: 0.5rem 1rem;
+  border: 3px solid var(--charcoal);
+  border-radius: 4px;
+}
+
+.online-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--lime);
+  border: 2px solid var(--lime-dark);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* ============================================
+   MAIN APP LAYOUT
+   ============================================ */
+.app-header {
+  background: var(--lime);
+  padding: 0.75rem 1rem;
+  border-bottom: 4px solid var(--charcoal);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.app-header h1 {
+  font-size: 0.9rem;
+  color: var(--charcoal);
+  margin: 0;
+  text-shadow: 2px 2px 0 var(--lime-light);
+}
+
+.app-header .online-count {
+  background: var(--white);
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-panel {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.tab-panel.active {
+  display: flex;
+}
+
+/* ============================================
+   BOTTOM TAB BAR
+   ============================================ */
+.tab-bar {
+  display: flex;
+  background: var(--white);
+  border-top: 4px solid var(--charcoal);
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 0.75rem 0.5rem;
+  color: var(--gray);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.2s;
+  border-right: 2px solid var(--cream);
+}
+
+.tab-btn:last-child {
+  border-right: none;
+}
+
+.tab-btn:hover {
+  background: var(--cream);
+}
+
+.tab-btn.active {
+  color: var(--charcoal);
+  background: var(--lime-light);
+}
+
+.tab-btn .tab-icon {
+  font-size: 1.2rem;
+}
+
+/* ============================================
+   EMOJI REACTIONS BAR
+   ============================================ */
+.emoji-bar {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.emoji-btn {
+  background: var(--cream);
+  border: 3px solid var(--charcoal);
+  border-radius: 4px;
+  padding: 0.4rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-width: 44px;
+}
+
+.emoji-btn:hover {
+  background: var(--yellow);
+  transform: scale(1.1);
+}
+
+.emoji-btn:active {
+  transform: scale(0.95);
+  background: var(--orange);
+}
+
+.emoji-btn.add-emoji {
+  font-size: 1rem;
+  color: var(--gray);
+  background: var(--mint);
+}
+
+/* ============================================
+   QUESTIONS FEED
+   ============================================ */
+.questions-feed {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  min-height: 120px;
+}
+
+.question-card {
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 4px;
+  padding: 0.75rem;
+  box-shadow: 3px 3px 0 var(--charcoal);
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.question-user {
+  color: var(--blue);
+  font-size: 0.75rem;
+  background: var(--mint);
+  padding: 0.2rem 0.4rem;
+  border-radius: 2px;
+}
+
+.question-content {
+  color: var(--charcoal);
+  font-size: 0.7rem;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.question-content img {
+  max-width: 100%;
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.question-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.upvote-btn {
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  color: var(--charcoal);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.upvote-btn:hover {
+  background: var(--yellow);
+}
+
+.upvote-btn.voted {
+  background: var(--coral);
+  color: var(--white);
+  border-color: var(--coral);
+}
+
+/* ============================================
+   CANVAS INPUT AREA
+   ============================================ */
+.canvas-input-area {
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 8px;
+  padding: 0.6rem;
+  margin-top: auto;
+  flex-shrink: 0;
+  box-shadow: 3px 3px 0 var(--charcoal);
+}
+
+.canvas-tools {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.tool-btn-wrapper {
+  position: relative;
+}
+
+.tool-btn {
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  padding: 0.4rem 0.5rem;
+  color: var(--charcoal);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.tool-btn:hover {
+  background: var(--yellow);
+}
+
+.tool-btn.active {
+  background: var(--lime);
+  border-color: var(--lime-dark);
+}
+
+.canvas-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.canvas-container {
+  flex: 1;
+  position: relative;
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.canvas-container canvas {
+  display: block;
+  width: 100%;
+  touch-action: none;
+  background: var(--white);
+  /* Lined paper effect */
+  background-image: repeating-linear-gradient(
+    var(--white) 0px,
+    var(--white) 19px,
+    var(--mint) 19px,
+    var(--mint) 20px
+  );
+}
+
+.canvas-text-input {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--lime-light);
+  border: none;
+  border-top: 2px solid var(--charcoal);
+  padding: 0.5rem;
+  color: var(--charcoal);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+}
+
+.canvas-text-input::placeholder {
+  color: var(--gray);
+}
+
+.send-btn {
+  font-family: 'Press Start 2P', cursive;
+  padding: 0.8rem;
+  font-size: 0.7rem;
+  background: var(--lime) !important;
+  border-color: var(--charcoal) !important;
+  box-shadow: 3px 3px 0 var(--charcoal);
+}
+
+.send-btn:hover {
+  background: var(--lime-light) !important;
+}
+
+.send-btn:active {
+  box-shadow: 1px 1px 0 var(--charcoal);
+  transform: translate(2px, 2px);
+}
+
+/* ============================================
+   DMs TAB
+   ============================================ */
+.dm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dm-user-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--charcoal);
+}
+
+.dm-user-item:hover {
+  background: var(--cream);
+}
+
+.dm-user-status {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gray-light);
+  border: 2px solid var(--charcoal);
+}
+
+.dm-user-status.online {
+  background: var(--lime);
+}
+
+.dm-user-name {
+  flex: 1;
+  font-size: 0.7rem;
+  color: var(--charcoal);
+}
+
+.dm-unread {
+  background: var(--coral);
+  color: var(--white);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}
+
+/* ============================================
+   FEED TAB
+   ============================================ */
+.activity-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.feed-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--white);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  align-items: flex-start;
+}
+
+.feed-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.feed-content {
+  flex: 1;
+}
+
+.feed-text {
+  font-size: 0.75rem;
+  color: var(--charcoal);
+  line-height: 1.5;
+}
+
+.feed-time {
+  font-size: 0.75rem;
+  color: var(--gray);
+  margin-top: 0.3rem;
+}
+
+/* ============================================
+   ME TAB (PROFILE)
+   ============================================ */
+.profile-section {
+  text-align: center;
+  padding: 1rem;
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 3px 3px 0 var(--charcoal);
+}
+
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 0.75rem;
+  image-rendering: pixelated;
+  border: 3px solid var(--charcoal);
+  border-radius: 4px;
+  background: var(--cream);
+}
+
+.profile-username {
+  color: var(--charcoal);
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.profile-title {
+  color: var(--purple-dark);
+  font-size: 0.7rem;
+  margin-bottom: 0.75rem;
+  background: var(--lime-light);
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.profile-coins {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--charcoal);
+  font-size: 0.8rem;
+  background: var(--yellow);
+  padding: 0.4rem 0.8rem;
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  display: inline-flex;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.stat-card {
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: center;
+  box-shadow: 2px 2px 0 var(--charcoal);
+}
+
+.stat-value {
+  color: var(--lime-dark);
+  font-size: 1.2rem;
+  margin-bottom: 0.3rem;
+}
+
+.stat-label {
+  color: var(--purple-dark);
+  font-size: 0.75rem;
+}
+
+.profile-links {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.profile-link-btn {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.75rem;
+  padding: 0.6rem;
+  box-shadow: 2px 2px 0 var(--charcoal);
+}
+
+/* ============================================
+   MODALS
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(62, 53, 70, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  display: none;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal {
+  background: var(--white);
+  border: 4px solid var(--charcoal);
+  border-radius: 8px;
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 6px 6px 0 var(--charcoal);
+}
+
+.modal h2 {
+  color: var(--charcoal);
+  font-size: 0.85rem;
+  margin: 0 0 1rem 0;
+  text-align: center;
+  background: var(--lime);
+  padding: 0.5rem;
+  margin: -1.5rem -1.5rem 1rem -1.5rem;
+  border-bottom: 4px solid var(--charcoal);
+}
+
+.modal-close {
+  margin-top: 1rem;
+  width: 100%;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Emoji Picker Modal */
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.4rem;
+}
+
+.emoji-grid button {
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  padding: 0.4rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.emoji-grid button:hover {
+  background: var(--yellow);
+  transform: scale(1.1);
+}
+
+/* ============================================
+   TOOL POPUPS (non-darkening)
+   ============================================ */
+
+.tool-popup {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 12px;
+  padding: 0.75rem;
+  box-shadow: 4px 4px 0 var(--charcoal);
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s, visibility 0.15s;
+  margin-bottom: 8px;
+  min-width: 130px;
+}
+
+.tool-popup.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tool-popup::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 20px;
+  border: 8px solid transparent;
+  border-top-color: var(--charcoal);
+}
+
+/* Color Picker Popup */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+}
+
+.color-btn {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--charcoal);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.color-btn:hover {
+  transform: scale(1.15);
+}
+
+.color-btn.active {
+  border-color: var(--white);
+  box-shadow: 0 0 0 3px var(--charcoal);
+}
+
+/* Pen Size Popup */
+.pen-sizes {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.pen-size-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  background: var(--cream);
+  border: 3px solid var(--charcoal);
+  border-radius: 8px;
+  padding: 0.5rem;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.pen-size-btn:hover {
+  background: var(--yellow);
+  transform: scale(1.1);
+}
+
+.pen-size-btn.active {
+  background: var(--lime);
+  border-color: var(--lime-dark);
+}
+
+.pen-preview {
+  background: var(--charcoal);
+  border-radius: 50%;
+}
+
+/* ============================================
+   THEME PICKER
+   ============================================ */
+
+.theme-picker {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.theme-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 3px solid var(--charcoal);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  min-width: 60px;
+}
+
+.theme-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 3px 3px 0 var(--charcoal);
+}
+
+.theme-btn.active {
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  transform: translateY(1px);
+}
+
+.theme-icon {
+  font-size: 1.25rem;
+}
+
+.theme-name {
+  font-size: 0.75rem;
+  color: var(--charcoal);
+}
+
+/* ============================================
+   DISPLAY OVERLAY
+   ============================================ */
+.display-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.emoji-animation {
+  position: absolute;
+  font-size: 3rem;
+  animation: emoji-float 3s ease-out forwards;
+}
+
+@keyframes emoji-float {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-200px) scale(1.5);
+  }
+}
+
+.current-question {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: var(--white);
+  border: 4px solid var(--lime);
+  border-radius: 8px;
+  padding: 1.5rem;
+  font-family: 'Press Start 2P', cursive;
+  box-shadow: 6px 6px 0 var(--charcoal);
+}
+
+.pokemon-spawn-alert {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--white);
+  border: 4px solid var(--yellow);
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  animation: spawn-pulse 0.5s ease-out;
+  box-shadow: 6px 6px 0 var(--charcoal);
+}
+
+@keyframes spawn-pulse {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* ============================================
+   ADMIN PANEL
+   ============================================ */
+.admin-container {
+  padding: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.admin-section {
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 3px 3px 0 var(--charcoal);
+}
+
+.admin-section h2 {
+  color: var(--charcoal);
+  font-size: 0.75rem;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid var(--lime);
+}
+
+.admin-btn {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.question-admin-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.75rem;
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.participant-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.5rem;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  font-size: 0.7rem;
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+.hidden {
+  display: none !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream);
+  border-left: 2px solid var(--charcoal);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--lime);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--lime-dark);
+}
+
+/* ============================================
+   NES.CSS OVERRIDES FOR LIGHT THEME
+   ============================================ */
+.nes-container {
+  background: var(--white) !important;
+}
+
+.nes-container.is-dark {
+  background: var(--white) !important;
+  color: var(--charcoal) !important;
+}
+
+.nes-container.is-dark.with-title > .title {
+  background-color: var(--bg-main) !important;
+  color: var(--charcoal) !important;
+}
+
+.nes-input, .nes-textarea, .nes-select {
+  background: var(--white) !important;
+  color: var(--charcoal) !important;
+  border-style: solid !important;
+  border-width: 3px !important;
+  border-color: var(--charcoal) !important;
+  border-image: none !important;
+}
+
+/* Clean up NES.css button borders - remove pixelated dashed look */
+.nes-btn {
+  font-family: 'Press Start 2P', cursive;
+  border-style: solid !important;
+  border-width: 3px !important;
+  border-color: var(--charcoal) !important;
+  border-image: none !important;
+  box-shadow: 3px 3px 0 var(--charcoal);
+  border-radius: 0;
+}
+
+.nes-btn::after {
+  display: none !important;
+}
+
+.nes-btn::before {
+  display: none !important;
+}
+
+.nes-btn:hover {
+  box-shadow: 4px 4px 0 var(--charcoal);
+}
+
+.nes-btn:active {
+  box-shadow: 1px 1px 0 var(--charcoal);
+  transform: translate(2px, 2px);
+}
+
+.nes-btn.is-primary {
+  background: var(--blue) !important;
+  color: var(--white) !important;
+}
+
+.nes-btn.is-success {
+  background: var(--lime) !important;
+  color: var(--charcoal) !important;
+}
+
+.nes-btn.is-warning {
+  background: var(--yellow) !important;
+  color: var(--charcoal) !important;
+}
+
+.nes-btn.is-error {
+  background: var(--coral) !important;
+  color: var(--white) !important;
+}
+
+.nes-btn.is-disabled,
+.nes-btn[disabled] {
+  background: var(--gray-light) !important;
+  color: var(--gray) !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Fix NES container borders too */
+.nes-container {
+  border-style: solid !important;
+  border-width: 3px !important;
+  border-color: var(--charcoal) !important;
+  border-image: none !important;
+}
+
+.nes-container::after {
+  display: none !important;
+}
+
+/* Fix checkbox styling */
+.nes-checkbox {
+  border: none !important;
+}
+
+/* Section titles for tabs */
+.tab-panel h2 {
+  color: var(--charcoal);
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+  background: var(--lime);
+  padding: 0.5rem;
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* ============================================
+   TRAINER CARD
+   ============================================ */
+.trainer-card {
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 3px 3px 0 var(--charcoal);
+}
+
+.trainer-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.trainer-info {
+  flex: 1;
+}
+
+.trainer-level-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--yellow);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  margin-top: 0.3rem;
+}
+
+.xp-bar-container {
+  margin: 0.75rem 0;
+}
+
+.xp-bar {
+  height: 16px;
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg,
+    var(--lime) 0%,
+    var(--lime-light) 50%,
+    var(--lime) 100%);
+  background-size: 200% 100%;
+  animation: xp-shimmer 2s linear infinite;
+  transition: width 0.3s ease;
+}
+
+@keyframes xp-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.xp-text {
+  display: block;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--purple-dark);
+  margin-top: 0.25rem;
+}
+
+/* ============================================
+   ZONE SELECTOR
+   ============================================ */
+.zone-section {
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  box-shadow: 2px 2px 0 var(--charcoal);
+}
+
+.section-label {
+  font-size: 0.7rem;
+  color: var(--charcoal);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.zone-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.zone-btn {
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  padding: 0.4rem 0.6rem;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.zone-btn:hover:not(.locked) {
+  background: var(--lime-light);
+  transform: translateY(-2px);
+}
+
+.zone-btn.current {
+  background: var(--lime);
+  border-color: var(--lime-dark);
+  box-shadow: 0 0 0 2px var(--lime-dark);
+}
+
+.zone-btn.locked {
+  background: var(--gray-light);
+  color: var(--gray);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.zone-name {
+  color: var(--charcoal);
+}
+
+.zone-level {
+  font-size: 0.75rem;
+  color: var(--coral);
+}
+
+/* ============================================
+   INVENTORY
+   ============================================ */
+.inventory-section {
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  box-shadow: 2px 2px 0 var(--charcoal);
+}
+
+.inventory-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.inventory-row:last-child {
+  margin-bottom: 0;
+}
+
+.inventory-label {
+  font-size: 0.75rem;
+  color: var(--purple-dark);
+  min-width: 50px;
+}
+
+.inventory-items {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.inventory-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+}
+
+.no-items {
+  font-size: 0.75rem;
+  color: var(--gray);
+  font-style: italic;
+}
+
+/* ============================================
+   POKEMON CATCH MODAL
+   ============================================ */
+.pokemon-catch-modal {
+  text-align: center;
+}
+
+.pokemon-sprite-container {
+  min-height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
+.pokemon-sprite-img {
+  max-width: 96px;
+  max-height: 96px;
+  image-rendering: pixelated;
+  animation: pokemon-bounce 0.6s ease-in-out infinite;
+}
+
+@keyframes pokemon-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.pokemon-sprite-img.shiny-glow {
+  filter: drop-shadow(0 0 8px gold);
+  animation: pokemon-bounce 0.6s ease-in-out infinite, shiny-sparkle 1s ease-in-out infinite;
+}
+
+@keyframes shiny-sparkle {
+  0%, 100% { filter: drop-shadow(0 0 8px gold); }
+  50% { filter: drop-shadow(0 0 16px gold) brightness(1.2); }
+}
+
+.pokemon-sprite-container.catching .pokemon-sprite-img {
+  animation: catch-shake 0.3s ease-in-out infinite;
+}
+
+@keyframes catch-shake {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  25% { transform: translateX(-4px) rotate(-5deg); }
+  75% { transform: translateX(4px) rotate(5deg); }
+}
+
+.rarity-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.rarity-common {
+  background: var(--gray-light);
+  color: var(--charcoal);
+}
+
+.rarity-uncommon {
+  background: var(--lime);
+  color: var(--charcoal);
+}
+
+.rarity-rare {
+  background: var(--blue);
+  color: var(--white);
+}
+
+.rarity-legendary {
+  background: linear-gradient(135deg, var(--yellow), var(--orange));
+  color: var(--charcoal);
+  animation: legendary-glow 1s ease-in-out infinite;
+}
+
+@keyframes legendary-glow {
+  0%, 100% { box-shadow: 0 0 5px var(--yellow); }
+  50% { box-shadow: 0 0 15px var(--orange); }
+}
+
+.shiny-text {
+  background: linear-gradient(135deg, gold, yellow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.catch-timer {
+  color: var(--yellow);
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.catch-timer.quick-catch-active {
+  color: var(--lime);
+  animation: pulse-green 0.5s ease-in-out infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { color: var(--lime); }
+  50% { color: var(--lime-light); text-shadow: 0 0 8px var(--lime); }
+}
+
+.catch-timer.timer-urgent {
+  color: var(--coral);
+  animation: pulse-red 0.3s ease-in-out infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Catch Rate Display */
+.catch-rate-display {
+  margin: 0.75rem 0;
+}
+
+.catch-rate-bar {
+  height: 12px;
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.catch-rate-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--coral) 0%, var(--orange) 50%, var(--lime) 100%);
+  transition: width 0.2s ease;
+}
+
+.catch-rate-text {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--purple-dark);
+  margin-top: 0.25rem;
+}
+
+/* Ball Selector */
+.ball-selector {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.ball-select-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem;
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-width: 50px;
+}
+
+.ball-select-btn:hover:not(.disabled) {
+  background: var(--lime-light);
+  transform: translateY(-2px);
+}
+
+.ball-select-btn.selected {
+  background: var(--lime);
+  border-color: var(--lime-dark);
+  box-shadow: 0 0 0 2px var(--lime-dark);
+}
+
+.ball-select-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ball-icon {
+  font-size: 1.2rem;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.ball-icon.pokeball {
+  color: #ff5252;
+  text-shadow: 0 1px 3px rgba(255, 82, 82, 0.5);
+}
+
+.ball-icon.great-ball {
+  color: #42a5f5;
+  text-shadow: 0 1px 3px rgba(66, 165, 245, 0.5);
+}
+
+.ball-icon.ultra-ball {
+  color: #ffc107;
+  text-shadow: 0 1px 3px rgba(255, 193, 7, 0.5);
+}
+
+.ball-icon.master-ball {
+  color: #9c27b0;
+  text-shadow: 0 1px 3px rgba(156, 39, 176, 0.5);
+}
+
+/* Inventory ball icons - larger */
+.inventory-item .ball-icon {
+  font-size: 1rem;
+}
+
+.ball-count {
+  font-size: 0.75rem;
+  color: var(--charcoal);
+}
+
+.catch-btn {
+  width: 100%;
+  font-size: 0.7rem;
+  padding: 0.75rem;
+}
+
+/* ============================================
+   POKEDEX
+   ============================================ */
+.pokedex-stats {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.pokedex-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+}
+
+.pokedex-entry {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.pokedex-entry:hover {
+  transform: scale(1.1);
+  z-index: 1;
+}
+
+.pokedex-entry img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.pokedex-entry.uncaught img.silhouette {
+  filter: brightness(0);
+}
+
+.pokedex-entry.caught {
+  border-color: var(--lime);
+}
+
+.pokedex-entry.has-shiny {
+  border-color: gold;
+  box-shadow: 0 0 4px gold;
+}
+
+.shiny-indicator {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  font-size: 0.75rem;
+}
+
+/* ============================================
+   EVOLUTION
+   ============================================ */
+.evolution-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.evo-sprite {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+}
+
+.evo-btn {
+  font-size: 0.45rem !important;
+  padding: 0.3rem 0.5rem !important;
+}
+
+/* ============================================
+   NOTIFICATIONS
+   ============================================ */
+.notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: var(--white);
+  border: 3px solid var(--charcoal);
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 4px 4px 0 var(--charcoal);
+  z-index: 2000;
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.notification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.notification-info {
+  border-color: var(--blue);
+}
+
+.notification-success {
+  border-color: var(--lime);
+  background: var(--lime-light);
+}
+
+.notification-warning {
+  border-color: var(--orange);
+  background: var(--yellow);
+}
+
+.floating-xp {
+  position: fixed;
+  color: var(--lime);
+  font-size: 0.7rem;
+  font-weight: bold;
+  z-index: 1500;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 1s ease;
+  text-shadow: 1px 1px 0 var(--charcoal);
+}
+
+.floating-xp.animate {
+  opacity: 1;
+  transform: translateY(-40px);
+}
+
+/* Level Up Overlay */
+.level-up-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.level-up-modal {
+  background: var(--white);
+  border: 4px solid var(--yellow);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 0 30px var(--yellow);
+  animation: levelUpPop 0.5s ease;
+}
+
+@keyframes levelUpPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.level-up-stars {
+  font-size: 2rem;
+  animation: starSpin 1s ease-in-out infinite;
+}
+
+@keyframes starSpin {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+}
+
+.level-up-modal h2 {
+  color: var(--charcoal);
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+
+.level-up-number {
+  font-size: 2.5rem;
+  color: var(--lime-dark);
+  margin: 0.5rem 0;
+}
+
+.unlocked-zones {
+  margin: 1rem 0;
+  font-size: 0.75rem;
+}
+
+.zone-badge {
+  display: inline-block;
+  background: var(--lime);
+  border: 2px solid var(--charcoal);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  margin: 0.2rem;
+  font-size: 0.75rem;
+}
+
+/* ============================================
+   MOBILE-FIRST RESPONSIVE STYLES
+   ============================================ */
+
+/* Compact spacing for mobile */
+.trainer-card {
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.trainer-header {
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.profile-avatar {
+  width: 56px;
+  height: 56px;
+}
+
+/* Tighter section spacing */
+.zone-section,
+.inventory-section {
+  padding: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Compact stats grid */
+.stats-grid {
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.stat-card {
+  padding: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1rem;
+}
+
+/* More compact buttons */
+.profile-links {
+  gap: 0.4rem;
+}
+
+.profile-link-btn {
+  padding: 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* Theme picker compact */
+.theme-btn {
+  padding: 0.4rem 0.5rem;
+  min-width: 50px;
+}
+
+.theme-icon {
+  font-size: 1.1rem;
+}
+
+.theme-name {
+  font-size: 0.7rem;
+}
+
+/* Compact Pokedex modal */
+.pokedex-grid {
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  max-height: 220px;
+}
+
+/* Ensure modals fit mobile screens */
+.modal {
+  max-height: 85vh;
+  margin: 0.5rem;
+}
+
+/* Bottom tab bar - larger touch targets */
+.tab-btn {
+  padding: 0.6rem 0.4rem;
+  min-height: 56px;
+}
+
+.tab-btn .tab-icon {
+  font-size: 1.4rem;
+}
+
+/* Log Drink button prominent */
+.nes-btn.is-warning {
+  padding: 0.6rem;
+  font-size: 0.7rem;
+}
+
+/* Prevent horizontal scroll */
+.app-content {
+  overflow-x: hidden;
+}
+
+/* Safe area insets for notched phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .tab-bar {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .app-header {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+  }
+}
+
+/* Scroll indicator for content below fold */
+.tab-panel {
+  position: relative;
+}
+
+#tab-me::after {
+  content: '';
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(transparent, rgba(200, 230, 160, 0.8));
+  pointer-events: none;
+  display: block;
+}
+
+/* ============================================
+   ENHANCED SHOP STYLES
+   ============================================ */
+
+.shop-modal {
+  max-width: 380px;
+}
+
+.shop-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.shop-category {
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.shop-category-header {
+  background: var(--lime);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.7rem;
+  color: var(--charcoal);
+  border-bottom: 2px solid var(--charcoal);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.shop-items {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.shop-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--white);
+  border: 2px solid var(--gray-light);
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.shop-item:hover {
+  border-color: var(--lime);
+  transform: translateX(2px);
+}
+
+.shop-item-icon {
+  font-size: 1.3rem;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.shop-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.shop-item-name {
+  font-size: 0.7rem;
+  color: var(--charcoal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shop-item-desc {
+  font-size: 0.75rem;
+  color: var(--gray);
+}
+
+.shop-buy-btn {
+  font-size: 0.4rem !important;
+  padding: 0.3rem 0.5rem !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.shop-buy-btn.cant-afford {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

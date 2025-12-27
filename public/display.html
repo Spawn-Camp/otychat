@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTY Chat - Display Overlay</title>
+
+  <!-- NES.css -->
+  <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Press Start 2P', cursive;
+      background: transparent;
+      overflow: hidden;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+    }
+
+    /* Emoji Animations */
+    .emoji-float {
+      position: absolute;
+      font-size: 4rem;
+      animation: float-up 3s ease-out forwards;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    @keyframes float-up {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+      }
+      50% {
+        opacity: 1;
+        transform: translateY(-150px) scale(1.2) rotate(10deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-300px) scale(0.8) rotate(-10deg);
+      }
+    }
+
+    /* Drawing Blast */
+    .drawing-blast {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: blast-in 4s ease-out forwards;
+      background: rgba(26, 26, 46, 0.95);
+      border: 4px solid #92cc41;
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 80%;
+      max-height: 60%;
+    }
+
+    .drawing-blast img {
+      max-width: 100%;
+      max-height: 400px;
+      border-radius: 8px;
+    }
+
+    .drawing-blast .author {
+      color: #4aa3df;
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .drawing-blast .text {
+      color: #fff;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      max-width: 600px;
+    }
+
+    @keyframes blast-in {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+      10% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+      20% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+      80% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+      }
+    }
+
+    /* Current Question Display */
+    .current-question {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      right: 30px;
+      background: rgba(26, 26, 46, 0.95);
+      border: 4px solid #f7d51d;
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      display: none;
+    }
+
+    .current-question.active {
+      display: block;
+      animation: slide-up 0.5s ease-out;
+    }
+
+    @keyframes slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .current-question .author {
+      color: #4aa3df;
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .current-question .content {
+      color: #fff;
+      font-size: 1.2rem;
+      line-height: 1.5;
+    }
+
+    .current-question img {
+      max-width: 300px;
+      max-height: 200px;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .current-question .votes {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      color: #e76e55;
+      font-size: 1rem;
+    }
+
+    /* Pokemon Spawn Alert */
+    .pokemon-alert {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(26, 26, 46, 0.98);
+      border: 6px solid #f7d51d;
+      border-radius: 16px;
+      padding: 3rem 4rem;
+      text-align: center;
+      display: none;
+    }
+
+    .pokemon-alert.active {
+      display: block;
+      animation: pokemon-bounce 0.5s ease-out;
+    }
+
+    @keyframes pokemon-bounce {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .pokemon-alert h2 {
+      color: #f7d51d;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .pokemon-sprite {
+      font-size: 6rem;
+      margin: 1rem 0;
+    }
+
+    .pokemon-alert .timer {
+      color: #e76e55;
+      font-size: 2rem;
+    }
+
+    .pokemon-alert .shiny {
+      color: #ff69b4;
+      animation: sparkle 0.5s infinite alternate;
+    }
+
+    @keyframes sparkle {
+      from { text-shadow: 0 0 10px #ff69b4; }
+      to { text-shadow: 0 0 20px #f7d51d, 0 0 30px #ff69b4; }
+    }
+
+    /* Achievement Notification */
+    .achievement-toast {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      background: rgba(26, 26, 46, 0.95);
+      border: 4px solid #92cc41;
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      animation: toast-in 4s ease-out forwards;
+    }
+
+    @keyframes toast-in {
+      0% {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      10% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      80% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+    }
+
+    .achievement-toast .icon {
+      font-size: 2rem;
+    }
+
+    .achievement-toast .info {
+      color: #fff;
+    }
+
+    .achievement-toast .title {
+      color: #92cc41;
+      font-size: 0.7rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .achievement-toast .name {
+      font-size: 0.9rem;
+    }
+
+    /* Drink Counter */
+    .drink-counter {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      background: rgba(26, 26, 46, 0.9);
+      border: 3px solid #f7d51d;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: #f7d51d;
+      font-size: 0.8rem;
+      display: none;
+    }
+
+    .drink-counter.active {
+      display: block;
+    }
+
+    /* Online Users Indicator */
+    .online-indicator {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      background: rgba(26, 26, 46, 0.8);
+      border: 2px solid #92cc41;
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      color: #92cc41;
+      font-size: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .online-dot {
+      width: 8px;
+      height: 8px;
+      background: #92cc41;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <!-- Emoji animations will spawn here -->
+
+    <!-- Current Question Display -->
+    <div class="current-question" id="current-question">
+      <span class="votes" id="question-votes">👍 0</span>
+      <div class="author" id="question-author">@username</div>
+      <div class="content" id="question-content"></div>
+    </div>
+
+    <!-- Pokemon Spawn Alert -->
+    <div class="pokemon-alert" id="pokemon-alert">
+      <h2 id="pokemon-title">Wild Pokémon appeared!</h2>
+      <div class="pokemon-sprite" id="pokemon-sprite">🔴</div>
+      <div class="timer" id="pokemon-timer">30</div>
+    </div>
+
+    <!-- Drink Counter -->
+    <div class="drink-counter" id="drink-counter">
+      🍺 Total Drinks: <span id="total-drinks">0</span>
+    </div>
+
+    <!-- Online Users -->
+    <div class="online-indicator">
+      <span class="online-dot"></span>
+      <span id="online-count">0</span> online
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/display.js"></script>
+</body>
+</html>
