@@ -1,12 +1,13 @@
 /**
  * OtyChat Display Overlay
  * Handles animations and visual feedback on the presentation screen
+ * Updated for modern playful design (1920x1080)
  */
 
 const socket = io();
 
 let totalDrinks = 0;
-let pokemonTimer = null;
+let totalQuestions = 0;
 
 // Join as display client
 socket.emit('join-display');
@@ -16,17 +17,26 @@ socket.emit('join-display');
 // ============================================
 
 socket.on('emoji-blast', (data) => {
-  spawnEmoji(data.emoji);
+  spawnEmoji(data.emoji, data.emojiUrl);
 });
 
-function spawnEmoji(emoji) {
+function spawnEmoji(emoji, emojiUrl) {
   const el = document.createElement('div');
   el.className = 'emoji-float';
-  el.textContent = emoji;
 
-  // Random horizontal position
-  const x = Math.random() * (window.innerWidth - 100) + 50;
-  const y = window.innerHeight - 100;
+  // Check if it's a custom emoji URL or a unicode emoji
+  if (emojiUrl && emojiUrl.startsWith('http')) {
+    const img = document.createElement('img');
+    img.src = emojiUrl;
+    img.alt = emoji;
+    el.appendChild(img);
+  } else {
+    el.textContent = emoji;
+  }
+
+  // Random horizontal position across 1920px width
+  const x = Math.random() * 1720 + 100;
+  const y = 980; // Start near bottom
 
   el.style.left = `${x}px`;
   el.style.top = `${y}px`;
@@ -34,15 +44,13 @@ function spawnEmoji(emoji) {
   document.querySelector('.overlay').appendChild(el);
 
   // Remove after animation
-  setTimeout(() => {
-    el.remove();
-  }, 3000);
+  setTimeout(() => el.remove(), 3500);
 }
 
 // Spawn multiple emojis for emphasis
-function spawnEmojiFlurry(emoji, count = 5) {
+function spawnEmojiFlurry(emoji, emojiUrl, count = 5) {
   for (let i = 0; i < count; i++) {
-    setTimeout(() => spawnEmoji(emoji), i * 100);
+    setTimeout(() => spawnEmoji(emoji, emojiUrl), i * 100);
   }
 }
 
@@ -70,10 +78,7 @@ function showDrawingBlast(data) {
   el.innerHTML = content;
   document.querySelector('.overlay').appendChild(el);
 
-  // Remove after animation
-  setTimeout(() => {
-    el.remove();
-  }, 4000);
+  setTimeout(() => el.remove(), 5000);
 }
 
 // ============================================
@@ -122,64 +127,92 @@ function hideCurrentQuestion() {
 }
 
 // ============================================
-// POKEMON SPAWNS
+// POKEMON CAUGHT
 // ============================================
 
-socket.on('pokemon-spawn', (data) => {
-  showPokemonSpawn(data);
-});
-
 socket.on('pokemon-caught', (data) => {
-  hidePokemonSpawn();
-
-  // Show achievement-style toast
-  showAchievementToast(`${data.username} caught ${data.pokemonName}!`, '🎉');
+  showPokemonCaught(data);
 });
 
-socket.on('pokemon-escaped', () => {
-  hidePokemonSpawn();
-});
+function showPokemonCaught(data) {
+  const el = document.createElement('div');
+  el.className = 'pokemon-caught-toast' + (data.isShiny ? ' shiny' : '');
 
-function showPokemonSpawn(data) {
-  const alert = document.getElementById('pokemon-alert');
-  const title = document.getElementById('pokemon-title');
-  const sprite = document.getElementById('pokemon-sprite');
-  const timer = document.getElementById('pokemon-timer');
+  const spriteUrl = data.isShiny
+    ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${data.pokemonId}.png`
+    : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data.pokemonId}.png`;
 
-  title.textContent = `Wild ${data.pokemonName} appeared!`;
-  title.className = data.isShiny ? 'shiny' : '';
+  el.innerHTML = `
+    <div class="sprite">
+      <img src="${spriteUrl}" alt="${escapeHtml(data.pokemonName)}">
+    </div>
+    <h2>${escapeHtml(data.username)} caught</h2>
+    <div class="pokemon-name">${escapeHtml(data.pokemonName)}${data.isShiny ? ' ✨' : ''}</div>
+    ${data.isShiny ? '<div class="shiny-badge">✨ SHINY! ✨</div>' : ''}
+  `;
 
-  // Could use actual Pokemon sprite URLs here
-  sprite.textContent = data.isShiny ? '✨🔴✨' : '🔴';
-  sprite.className = 'pokemon-sprite' + (data.isShiny ? ' shiny' : '');
-
-  let timeLeft = 30;
-  timer.textContent = timeLeft;
-
-  // Clear existing timer
-  if (pokemonTimer) {
-    clearInterval(pokemonTimer);
-  }
-
-  pokemonTimer = setInterval(() => {
-    timeLeft--;
-    timer.textContent = timeLeft;
-
-    if (timeLeft <= 0) {
-      clearInterval(pokemonTimer);
-      hidePokemonSpawn();
-    }
-  }, 1000);
-
-  alert.classList.add('active');
+  document.querySelector('.overlay').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
 }
 
-function hidePokemonSpawn() {
-  if (pokemonTimer) {
-    clearInterval(pokemonTimer);
-    pokemonTimer = null;
+// ============================================
+// KUDOS
+// ============================================
+
+socket.on('kudos', (data) => {
+  showKudosBurst(data);
+});
+
+function showKudosBurst(data) {
+  const el = document.createElement('div');
+  el.className = 'kudos-burst';
+
+  let messageHtml = '';
+  if (data.message) {
+    messageHtml = `<div class="message" style="font-size: 24px; margin-top: 8px; color: #666;">"${escapeHtml(data.message)}"</div>`;
   }
-  document.getElementById('pokemon-alert').classList.remove('active');
+
+  el.innerHTML = `
+    <div class="heart">💖</div>
+    <div class="text">
+      <span class="from">${escapeHtml(data.fromUsername)}</span>
+      →
+      <span class="to">${escapeHtml(data.toUsername)}</span>
+      ${messageHtml}
+    </div>
+  `;
+
+  document.querySelector('.overlay').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ============================================
+// LEVEL UP
+// ============================================
+
+socket.on('level-up', (data) => {
+  showLevelUpBurst(data);
+});
+
+function showLevelUpBurst(data) {
+  const el = document.createElement('div');
+  el.className = 'level-up-burst';
+
+  let zoneHtml = '';
+  if (data.unlockedZone) {
+    zoneHtml = `<div class="zone-unlock">🗺️ ${escapeHtml(data.unlockedZone)} Zone Unlocked!</div>`;
+  }
+
+  el.innerHTML = `
+    <div class="stars">⭐✨⭐</div>
+    <h2>LEVEL UP!</h2>
+    <div class="username">${escapeHtml(data.username)}</div>
+    <div class="level">Level ${data.level}</div>
+    ${zoneHtml}
+  `;
+
+  document.querySelector('.overlay').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
 }
 
 // ============================================
@@ -187,26 +220,8 @@ function hidePokemonSpawn() {
 // ============================================
 
 socket.on('achievement-unlocked', (data) => {
-  showAchievementToast(`${data.username} unlocked: ${data.achievement}`, '🏆');
+  showToast('achievement', '🏆', 'Achievement Unlocked!', `${data.username}: ${data.achievement}`);
 });
-
-function showAchievementToast(message, icon = '🏆') {
-  const toast = document.createElement('div');
-  toast.className = 'achievement-toast';
-  toast.innerHTML = `
-    <span class="icon">${icon}</span>
-    <div class="info">
-      <div class="title">Achievement Unlocked!</div>
-      <div class="name">${escapeHtml(message)}</div>
-    </div>
-  `;
-
-  document.querySelector('.overlay').appendChild(toast);
-
-  setTimeout(() => {
-    toast.remove();
-  }, 4000);
-}
 
 // ============================================
 // DRINKS
@@ -215,16 +230,25 @@ function showAchievementToast(message, icon = '🏆') {
 socket.on('drink-logged', (data) => {
   totalDrinks = data.totalDrinks || totalDrinks + 1;
   updateDrinkCounter();
-
-  // Show toast
-  showAchievementToast(`${data.username} logged drink #${data.count}`, '🍺');
+  showToast('drink', '🍺', 'Cheers!', `${data.username} logged drink #${data.count}`);
 });
 
 function updateDrinkCounter() {
   const counter = document.getElementById('drink-counter');
   document.getElementById('total-drinks').textContent = totalDrinks;
-  counter.classList.add('active');
+  counter.style.display = 'flex';
 }
+
+// ============================================
+// QUESTIONS COUNT
+// ============================================
+
+socket.on('question-added', (data) => {
+  totalQuestions++;
+  const counter = document.getElementById('question-counter');
+  document.getElementById('total-questions').textContent = totalQuestions;
+  counter.style.display = 'flex';
+});
 
 // ============================================
 // ONLINE COUNT
@@ -235,10 +259,32 @@ socket.on('user-count', (count) => {
 });
 
 // ============================================
+// TOAST NOTIFICATIONS
+// ============================================
+
+function showToast(type, icon, title, message) {
+  const container = document.getElementById('toast-container');
+
+  const toast = document.createElement('div');
+  toast.className = `achievement-toast ${type}`;
+  toast.innerHTML = `
+    <span class="icon">${icon}</span>
+    <div class="info">
+      <div class="title">${escapeHtml(title)}</div>
+      <div class="message">${escapeHtml(message)}</div>
+    </div>
+  `;
+
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+
+// ============================================
 // UTILITIES
 // ============================================
 
 function escapeHtml(text) {
+  if (!text) return '';
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
@@ -254,8 +300,28 @@ document.addEventListener('keydown', (e) => {
     hideCurrentQuestion();
   }
 
-  // Press 'P' to hide Pokemon
-  if (e.key === 'p' || e.key === 'P') {
-    hidePokemonSpawn();
+  // Press 'C' to clear all animations
+  if (e.key === 'c' || e.key === 'C') {
+    document.querySelectorAll('.emoji-float, .drawing-blast, .pokemon-caught-toast, .kudos-burst, .level-up-burst').forEach(el => el.remove());
+  }
+
+  // Press 'T' to test emoji
+  if (e.key === 't' || e.key === 'T') {
+    spawnEmojiFlurry('🎉', null, 5);
   }
 });
+
+// ============================================
+// CONNECTION STATUS
+// ============================================
+
+socket.on('connect', () => {
+  console.log('✅ Display connected to server');
+});
+
+socket.on('disconnect', () => {
+  console.log('❌ Display disconnected from server');
+});
+
+console.log('🖥️ OtyChat Display Overlay loaded (1920x1080)');
+console.log('Keyboard shortcuts: H = hide question, C = clear animations, T = test emoji');

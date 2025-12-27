@@ -439,13 +439,28 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     });
 
     // Kudos
-    newSocket.on('kudos-received', (data: { from: string; message: string; coins: number }) => {
+    newSocket.on('kudos-received', (data: { fromUsername: string; message: string; coins: number }) => {
+      // Update coins
+      setUser(prev => prev ? { ...prev, odCoins: prev.odCoins + data.coins } : null);
+      // Add to feed
       addFeedItem({
         type: 'kudos',
-        message: `${data.from} gave you kudos: "${data.message}" (+${data.coins} coins)`,
+        message: data.message
+          ? `${data.fromUsername} sent you kudos: "${data.message}" (+${data.coins} coins)`
+          : `${data.fromUsername} sent you kudos! (+${data.coins} coins)`,
         icon: '💖',
-        username: data.from,
+        username: data.fromUsername,
       });
+    });
+
+    newSocket.on('kudos-sent', (data: { toUsername: string; coins: number }) => {
+      // Update sender's coins
+      setUser(prev => prev ? { ...prev, odCoins: prev.odCoins + data.coins } : null);
+    });
+
+    newSocket.on('kudos-error', (data: { message: string }) => {
+      // Could show a toast/notification here - for now just log
+      console.warn('[Kudos Error]', data.message);
     });
 
     // Leaderboards

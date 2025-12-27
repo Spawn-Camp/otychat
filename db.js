@@ -174,6 +174,17 @@ async function initDatabase() {
       FOREIGN KEY (user_id) REFERENCES users(id),
       UNIQUE(question_id, user_id)
     );
+
+    -- Kudos (with cooldown tracking)
+    CREATE TABLE IF NOT EXISTS kudos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      from_user_id INTEGER NOT NULL,
+      to_user_id INTEGER NOT NULL,
+      message TEXT,
+      sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (from_user_id) REFERENCES users(id),
+      FOREIGN KEY (to_user_id) REFERENCES users(id)
+    );
   `);
 
   // Migration: Add new columns to existing tables if they don't exist
@@ -731,6 +742,52 @@ function deleteQuestion(id) {
 }
 
 // ============================================
+// KUDOS FUNCTIONS
+// ============================================
+
+const KUDOS_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour cooldown per person
+
+function canSendKudos(fromUserId, toUserId) {
+  // Check if there's a recent kudos from this user to the target
+  const recent = queryOne(`
+    SELECT * FROM kudos
+    WHERE from_user_id = ? AND to_user_id = ?
+    AND datetime(sent_at) > datetime('now', '-1 hour')
+    LIMIT 1
+  `, [fromUserId, toUserId]);
+  return !recent;
+}
+
+function sendKudos(fromUserId, toUserId, message = '') {
+  // Check cooldown first
+  if (!canSendKudos(fromUserId, toUserId)) {
+    return { success: false, reason: 'cooldown' };
+  }
+
+  // Can't send kudos to yourself
+  if (fromUserId === toUserId) {
+    return { success: false, reason: 'self' };
+  }
+
+  // Insert kudos record
+  runSql(`INSERT INTO kudos (from_user_id, to_user_id, message) VALUES (?, ?, ?)`,
+    [fromUserId, toUserId, message]);
+  markChanged();
+
+  return { success: true };
+}
+
+function getKudosReceived(userId) {
+  const result = queryOne(`SELECT COUNT(*) as count FROM kudos WHERE to_user_id = ?`, [userId]);
+  return result ? result.count : 0;
+}
+
+function getKudosSent(userId) {
+  const result = queryOne(`SELECT COUNT(*) as count FROM kudos WHERE from_user_id = ?`, [userId]);
+  return result ? result.count : 0;
+}
+
+// ============================================
 // EXPORTED API
 // ============================================
 
@@ -816,6 +873,12 @@ module.exports = {
   upvoteQuestion,
   getQuestion,
   deleteQuestion,
+
+  // Kudos
+  canSendKudos,
+  sendKudos,
+  getKudosReceived,
+  getKudosSent,
 
   // Leaderboards
   getLeaderboards

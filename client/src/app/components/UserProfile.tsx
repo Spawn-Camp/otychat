@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { useSocket } from '../../contexts/SocketContext';
+
 interface UserProfileProps {
   username: string;
   onBack: () => void;
@@ -61,6 +64,11 @@ const MOCK_USERS: Record<string, UserData> = {
 };
 
 export default function UserProfile({ username, onBack, onDM }: UserProfileProps) {
+  const { sendKudos, user: currentUser } = useSocket();
+  const [showKudosModal, setShowKudosModal] = useState(false);
+  const [kudosMessage, setKudosMessage] = useState('');
+  const [kudosSent, setKudosSent] = useState(false);
+
   const user = MOCK_USERS[username] || {
     username,
     profilePic: '👤',
@@ -72,6 +80,18 @@ export default function UserProfile({ username, onBack, onDM }: UserProfileProps
     kudosReceived: 0,
     joinedDate: 'Dec 2024'
   };
+
+  const handleSendKudos = () => {
+    sendKudos(username, kudosMessage);
+    setKudosSent(true);
+    setTimeout(() => {
+      setShowKudosModal(false);
+      setKudosMessage('');
+      setKudosSent(false);
+    }, 1500);
+  };
+
+  const isOwnProfile = currentUser?.odName === username;
 
   return (
     <div className="min-h-screen pb-20">
@@ -191,21 +211,24 @@ export default function UserProfile({ username, onBack, onDM }: UserProfileProps
           </button>
         )}
 
-        <button
-          className="w-full p-4 rounded-2xl transition-all transform hover:scale-105 active:scale-95"
-          style={{
-            background: 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
-            border: 'none',
-            fontFamily: 'Fredoka, sans-serif',
-            fontSize: '16px',
-            fontWeight: '700',
-            color: 'var(--text)'
-          }}
-        >
-          💖 Give Kudos
-        </button>
+        {!isOwnProfile && (
+          <button
+            onClick={() => setShowKudosModal(true)}
+            className="w-full p-4 rounded-2xl transition-all transform hover:scale-105 active:scale-95"
+            style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+              border: 'none',
+              fontFamily: 'Fredoka, sans-serif',
+              fontSize: '16px',
+              fontWeight: '700',
+              color: 'var(--text)'
+            }}
+          >
+            💖 Give Kudos
+          </button>
+        )}
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3">
@@ -251,6 +274,114 @@ export default function UserProfile({ username, onBack, onDM }: UserProfileProps
           </div>
         </div>
       </div>
+
+      {/* Kudos Modal */}
+      {showKudosModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(0, 0, 0, 0.5)' }}
+          onClick={() => !kudosSent && setShowKudosModal(false)}
+        >
+          <div
+            className="w-full max-w-sm p-6 rounded-3xl"
+            style={{
+              background: 'rgba(255, 255, 255, 0.98)',
+              backdropFilter: 'blur(20px)',
+              boxShadow: '0 16px 48px rgba(0, 0, 0, 0.2)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {kudosSent ? (
+              <div className="text-center py-4">
+                <div className="text-6xl mb-4">💖</div>
+                <p style={{
+                  fontFamily: 'Fredoka, sans-serif',
+                  fontSize: '18px',
+                  fontWeight: '700',
+                  color: 'var(--text)'
+                }}>
+                  Kudos sent to {username}!
+                </p>
+                <p style={{
+                  fontSize: '14px',
+                  color: 'var(--text-muted)',
+                  marginTop: '8px'
+                }}>
+                  You both earned 10 coins! 🪙
+                </p>
+              </div>
+            ) : (
+              <>
+                <h3 style={{
+                  fontFamily: 'Fredoka, sans-serif',
+                  fontSize: '20px',
+                  fontWeight: '700',
+                  color: 'var(--text)',
+                  textAlign: 'center',
+                  marginBottom: '16px'
+                }}>
+                  💖 Send Kudos to {username}
+                </h3>
+
+                <p style={{
+                  fontSize: '14px',
+                  color: 'var(--text-muted)',
+                  textAlign: 'center',
+                  marginBottom: '16px'
+                }}>
+                  You both earn 10 coins! 🪙
+                </p>
+
+                <textarea
+                  value={kudosMessage}
+                  onChange={(e) => setKudosMessage(e.target.value)}
+                  placeholder="Add a message (optional)"
+                  maxLength={100}
+                  className="w-full p-3 rounded-2xl mb-4"
+                  style={{
+                    border: '2px solid var(--border)',
+                    background: 'var(--bg-secondary)',
+                    color: 'var(--text)',
+                    fontSize: '14px',
+                    resize: 'none',
+                    height: '80px'
+                  }}
+                />
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowKudosModal(false)}
+                    className="flex-1 p-3 rounded-2xl transition-all"
+                    style={{
+                      background: 'var(--bg-secondary)',
+                      color: 'var(--text)',
+                      fontFamily: 'Fredoka, sans-serif',
+                      fontWeight: '600',
+                      border: 'none'
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSendKudos}
+                    className="flex-1 p-3 rounded-2xl transition-all transform hover:scale-105"
+                    style={{
+                      background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)',
+                      color: 'white',
+                      fontFamily: 'Fredoka, sans-serif',
+                      fontWeight: '700',
+                      border: 'none',
+                      boxShadow: '0 4px 16px rgba(236, 72, 153, 0.3)'
+                    }}
+                  >
+                    Send 💖
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

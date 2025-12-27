@@ -755,6 +755,77 @@ io.on('connection', (socket) => {
   });
 
   // ----------------------------------------
+  // KUDOS
+  // ----------------------------------------
+
+  socket.on('send-kudos', ({ toUsername, message }) => {
+    if (!socket.data.userId) return;
+
+    const fromUserId = socket.data.userId;
+    const fromUsername = socket.data.username;
+
+    // Find recipient
+    const toUser = db.getUserByUsername(toUsername);
+    if (!toUser) {
+      socket.emit('kudos-error', { message: 'User not found' });
+      return;
+    }
+
+    // Attempt to send kudos (checks cooldown internally)
+    const result = db.sendKudos(fromUserId, toUser.id, message || '');
+
+    if (!result.success) {
+      if (result.reason === 'cooldown') {
+        socket.emit('kudos-error', { message: 'You can only send kudos to the same person once per hour' });
+      } else if (result.reason === 'self') {
+        socket.emit('kudos-error', { message: "You can't send kudos to yourself!" });
+      }
+      return;
+    }
+
+    // Award coins to both sender and receiver (10 each)
+    const KUDOS_COINS = 10;
+    db.addCoins(fromUserId, KUDOS_COINS);
+    db.addCoins(toUser.id, KUDOS_COINS);
+
+    // Notify sender
+    socket.emit('kudos-sent', {
+      toUsername,
+      coins: KUDOS_COINS
+    });
+
+    // Notify receiver if online
+    const recipientEntry = [...connectedUsers.entries()]
+      .find(([_, data]) => data.username === toUsername);
+    if (recipientEntry) {
+      const [recipientSocketId] = recipientEntry;
+      io.to(recipientSocketId).emit('kudos-received', {
+        fromUsername,
+        message: message || '',
+        coins: KUDOS_COINS
+      });
+    }
+
+    // Broadcast to feed
+    io.emit('feed-event', {
+      type: 'kudos',
+      fromUsername,
+      toUsername,
+      message: message || '',
+      timestamp: Date.now()
+    });
+
+    // Broadcast to display
+    emitToDisplay('kudos', {
+      fromUsername,
+      toUsername,
+      message: message || ''
+    });
+
+    console.log(`[Kudos] ${fromUsername} -> ${toUsername}: "${message || '(no message)'}"`);
+  });
+
+  // ----------------------------------------
   // POKEMON - ENHANCED CATCH SYSTEM
   // ----------------------------------------
 
