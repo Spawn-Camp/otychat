@@ -597,6 +597,7 @@ io.on('connection', (socket) => {
   // ----------------------------------------
 
   socket.on('send-emoji', ({ emoji }) => {
+    console.log(`[Emoji] ${socket.data.username} sent: ${emoji}`);
     if (!socket.data.userId) return;
 
     if (currentPresentation) {

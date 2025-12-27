@@ -515,7 +515,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   }, [socket]);
 
   const sendReaction = useCallback((emoji: string) => {
-    socket?.emit('reaction', { emoji });
+    socket?.emit('send-emoji', { emoji });
   }, [socket]);
 
   const sendQuestion = useCallback((content: string, type: 'text' | 'drawing', imageData?: string) => {
