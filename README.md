@@ -1,6 +1,6 @@
 # OtyChat
 
-A real-time presentation companion app for in-person hangouts. Think PictoChat meets Pokemon GO.
+A real-time presentation companion app for in-person hangouts. 
 
 ## Features
 
@@ -10,7 +10,7 @@ A real-time presentation companion app for in-person hangouts. Think PictoChat m
 - **Direct Messages** - Chat privately with other participants
 - **Pokemon Catching** - Catch Pokemon in different zones, level up your trainer
 - **Achievements & Leaderboards** - Earn XP, coins, and compete with friends
-- **Drink Tracking** - Log drinks throughout the night
+- **Much, much, more**
 
 ## Tech Stack
 
