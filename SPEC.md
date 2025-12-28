@@ -73,7 +73,7 @@ A playful web app for in-person presentation hangouts. Everyone joins from their
 
 ## Navigation
 
-Bottom tab bar with 5 tabs:
+Bottom tab bar with **6 tabs**:
 
 | Tab | Icon | Purpose |
 |-----|------|---------|
@@ -81,6 +81,7 @@ Bottom tab bar with 5 tabs:
 | React | 🎭 | Emoji reactions, questions feed, drawing/text input |
 | Pokémon | ⚡ | Catch Pokémon, view Pokédex, change zones |
 | DMs | 💬 | Direct messages with other users |
+| Fun | 🎉 | Tools: Popcorn Emergency, future fun features |
 | Me | 👤 | Profile, stats, inventory, settings |
 
 ---
@@ -177,7 +178,42 @@ Simple username entry with animated background. Credentials cached in localStora
 - Unread message badges
 - Same MessageComposer for sending drawings/text
 
-### 6. Me Tab
+### 6. Fun Tab
+
+The "Fun" tab is a collection of interactive tools and features for the hangout. Designed to be extensible for future additions.
+
+```
+┌─────────────────────────────────────────┐
+│  🎉 Fun Stuff                           │
+│                                         │
+│  ┌─────────────────────────────────────┐│
+│  │  🍿 POPCORN EMERGENCY               ││
+│  │                                     ││
+│  │  Need everyone's attention?         ││
+│  │  Sound the alarm!                   ││
+│  │                                     ││
+│  │  [    🚨 SEND EMERGENCY    ]        ││
+│  └─────────────────────────────────────┘│
+│                                         │
+│  ┌─────────────────────────────────────┐│
+│  │  🎲 Coming Soon                     ││
+│  │  • Polls & Voting                   ││
+│  │  • Group Challenges                 ││
+│  │  • Trivia Mode                      ││
+│  └─────────────────────────────────────┘│
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**Future Fun Tab Ideas:**
+- **Polls & Voting** - Quick group decisions
+- **Group Challenges** - "Everyone catch a Pikachu in 2 minutes"
+- **Trivia Mode** - Presenter asks questions, everyone buzzes in
+- **Soundboard** - Play sound effects to the room
+- **Confetti Cannon** - Trigger celebration on display
+- **Secret Messages** - Send anonymous notes to display
+
+### 7. Me Tab
 
 - Profile picture and username
 - Trainer level with XP bar
@@ -186,6 +222,106 @@ Simple username entry with animated background. Credentials cached in localStora
 - Shop for items
 - Background theme selector
 - Logout button
+
+---
+
+## Popcorn Emergency Feature
+
+### Overview
+
+A way to summon friends when the popcorn is ready (or any urgent group moment). The host selects who to invite, and recipients get a full-screen modal they must respond to.
+
+### User Flow
+
+**1. Host Initiates**
+- Host taps "🍿 POPCORN EMERGENCY" button in Fun tab
+- Modal opens with user selection
+
+**2. Select Recipients**
+```
+┌─────────────────────────────────────────┐
+│  🍿 Popcorn Emergency                   │
+│                                         │
+│  Who needs to come?                     │
+│                                         │
+│  ┌─────────────────────────────────────┐│
+│  │ [✓] SELECT ALL                      ││
+│  ├─────────────────────────────────────┤│
+│  │ [✓] @alice                          ││
+│  │ [✓] @bob                            ││
+│  │ [ ] @charlie                        ││
+│  │ [✓] @diana                          ││
+│  └─────────────────────────────────────┘│
+│                                         │
+│  [  Cancel  ]  [ 🚨 SEND EMERGENCY ]    │
+└─────────────────────────────────────────┘
+```
+
+**3. Recipients Get Notified**
+```
+┌─────────────────────────────────────────┐
+│                                         │
+│               🍿                        │
+│                                         │
+│       POPCORN EMERGENCY!                │
+│                                         │
+│        @chase needs you!                │
+│                                         │
+│  ┌─────────────┐    ┌─────────────┐     │
+│  │   DECLINE   │    │   ACCEPT    │     │
+│  │     ❌      │    │     ✅      │     │
+│  └─────────────┘    └─────────────┘     │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**4. Host Sees Responses**
+```
+┌─────────────────────────────────────────┐
+│  🍿 Emergency Status                    │
+│                                         │
+│  Waiting for responses...               │
+│                                         │
+│  ✅ @alice                              │
+│  ✅ @bob                                │
+│  ⏳ @diana                              │
+│  ❌ @charlie                            │
+│                                         │
+│  2 accepted · 1 declined · 1 pending    │
+│                                         │
+│  [     Close Emergency     ]            │
+└─────────────────────────────────────────┘
+```
+
+**5. Display Overlay (when sent to ALL)**
+- If host selected "SELECT ALL", the emergency shows on the presentation screen
+- Emergency broadcast aesthetic with animated popcorn
+- Shows responders appearing as they accept
+
+### Server State
+
+No persistent storage required. Emergency state held in memory:
+
+```javascript
+let activeEmergency = {
+  id: 'emergency-123',
+  hostSocketId: 'socket-abc',
+  hostUsername: 'chase',
+  invitees: ['alice', 'bob', 'charlie'],
+  isAll: true,
+  responses: {
+    'alice': 'accepted',
+    'bob': 'pending',
+    'charlie': 'declined'
+  },
+  createdAt: Date.now()
+};
+```
+
+### Auto-Expiration
+
+- Emergency auto-expires after 5 minutes if not closed
+- Prevents zombie emergencies if host disconnects
 
 ---
 
@@ -205,6 +341,9 @@ Simple username entry with animated background. Credentials cached in localStora
 | `send-dm` | `{ toUsername, content }` | Send direct message |
 | `send-kudos` | `{ toUsername, message }` | Give kudos |
 | `buy-item` | `{ itemId }` | Purchase from shop |
+| `popcorn-emergency` | `{ invitees: string[] \| 'all' }` | Initiate emergency |
+| `popcorn-emergency-respond` | `{ accepted: boolean }` | Respond to invite |
+| `popcorn-emergency-end` | `{}` | Host closes emergency |
 
 ### Server → Client
 
@@ -220,6 +359,18 @@ Simple username entry with animated background. Credentials cached in localStora
 | `level-up` | `{ level, unlockedZone? }` | Level up notification |
 | `leaderboards` | `{ xp, pokemon, shiny, reactions }` | Leaderboard data |
 | `online-users` | `[users]` | Online user list |
+| `popcorn-emergency-invite` | `{ hostUsername, emergencyId }` | Invite received |
+| `popcorn-emergency-response` | `{ username, status }` | Someone responded |
+| `popcorn-emergency-ended` | `{}` | Emergency closed |
+
+### Server → Display
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `emoji-blast` | `{ emoji, emojiUrl }` | Show emoji on screen |
+| `popcorn-emergency-start` | `{ hostUsername, invitees }` | Show emergency on screen (all only) |
+| `popcorn-emergency-response` | `{ username, status }` | Update responder on screen |
+| `popcorn-emergency-end` | `{}` | Hide emergency from screen |
 
 ---
 
@@ -308,10 +459,19 @@ OtyChat/
 ├── db.js                  # SQLite database functions
 ├── pokemon.js             # Pokemon zones, spawns, catch rates
 ├── achievements.js        # Achievement definitions
+├── push.js                # Push notification logic
+├── .env                   # VAPID keys for push notifications
 ├── SPEC.md               # This file
 ├── CLAUDE.md             # Development guide for Claude
 ├── data/
 │   └── otychat.db        # SQLite database
+├── otychat-extension/    # Chrome extension for display overlay
+│   ├── manifest.json
+│   ├── content.js
+│   ├── overlay.css
+│   ├── background.js
+│   ├── lib/socket.io.min.js
+│   └── popup/
 └── client/               # React frontend
     ├── package.json
     ├── vite.config.ts
@@ -322,6 +482,8 @@ OtyChat/
         ├── index.css
         ├── contexts/
         │   └── SocketContext.tsx
+        ├── hooks/
+        │   └── usePushNotifications.ts
         └── app/
             ├── components/
             │   ├── MainApp.tsx
@@ -329,11 +491,15 @@ OtyChat/
             │   ├── MessageComposer.tsx
             │   ├── EmojiPicker.tsx
             │   ├── UserProfile.tsx
+            │   ├── NotificationPrompt.tsx
+            │   ├── IOSInstallPrompt.tsx
+            │   ├── PopcornEmergency.tsx
             │   └── tabs/
             │       ├── FeedTab.tsx
             │       ├── ReactTab.tsx
             │       ├── PokemonTab.tsx
             │       ├── DMsTab.tsx
+            │       ├── FunTab.tsx
             │       └── MeTab.tsx
             └── data/
                 └── emoji-data.ts
@@ -359,12 +525,147 @@ Backend: http://localhost:3000
 
 ---
 
+## Push Notifications
+
+Web Push notifications for DMs, Popcorn Emergencies, and other events even when the app is backgrounded.
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        Client                               │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │   App UI    │  │   Service   │  │  Push Subscription  │  │
+│  │             │  │   Worker    │  │  (stored in DB)     │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                         Push Message
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     OtyChat Server                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │  Socket.io  │──│  web-push   │  │  Push Subscriptions │  │
+│  │   Events    │  │   Library   │  │   (SQLite table)    │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Setup Requirements
+
+1. **Install**: `npm install web-push`
+2. **Generate VAPID keys**: `npx web-push generate-vapid-keys`
+3. **Environment variables**: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_EMAIL`
+
+### Database Addition
+
+```sql
+CREATE TABLE push_subscriptions (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  endpoint TEXT NOT NULL UNIQUE,
+  keys_p256dh TEXT NOT NULL,
+  keys_auth TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+```
+
+### Push Notification Triggers
+
+| Event | Title | Body | Who Receives |
+|-------|-------|------|--------------|
+| DM received | `Message from @{sender}` | Message preview or "📷 Sent a drawing" | Recipient |
+| Popcorn Emergency | `🍿 POPCORN EMERGENCY` | `{host} needs you!` | All invitees |
+| Question upvoted | `Your question got upvoted!` | `+{n} votes` | Question author |
+
+### File Additions
+
+```
+OtyChat/
+├── push.js                    # Push notification logic
+├── .env                       # VAPID keys
+├── client/
+│   ├── public/
+│   │   ├── sw.js              # Service Worker
+│   │   ├── manifest.json      # PWA manifest
+│   │   └── icons/             # App icons (various sizes)
+│   └── src/
+│       ├── hooks/
+│       │   └── usePushNotifications.ts
+│       └── components/
+│           ├── NotificationPrompt.tsx
+│           └── IOSInstallPrompt.tsx
+```
+
+### Notes
+
+- **iOS requires PWA install** - Show install prompt for Safari users
+- **HTTPS required** - Service workers only work on HTTPS (localhost exempt)
+- **Subscription cleanup** - Remove subscriptions that return 410/404
+
+---
+
+## Chrome Extension (Display Overlay)
+
+A Chrome extension that injects a transparent overlay onto Google Slides (including fullscreen mode) to display emoji reactions and Popcorn Emergency broadcasts.
+
+### Extension Structure
+
+```
+otychat-extension/
+├── manifest.json           # Extension manifest (v3)
+├── content.js              # Injected into Google Slides pages
+├── overlay.css             # Styles for overlay elements
+├── background.js           # Service worker for extension lifecycle
+├── lib/
+│   └── socket.io.min.js    # Socket.io client (bundled)
+├── popup/
+│   ├── popup.html          # Extension popup UI
+│   ├── popup.css           # Popup styles
+│   └── popup.js            # Popup logic (server URL config)
+└── icons/
+    ├── icon16.png
+    ├── icon48.png
+    └── icon128.png
+```
+
+### Features
+
+**Emoji Animations (6 patterns):**
+- `float-up` - Classic rise and fade
+- `pop-in` - Scale bounce in place
+- `bounce-across` - Traverse screen horizontally
+- `spiral-rise` - Corkscrew upward
+- `firework` - Rise and burst into particles
+- `rain-down` - Fall from top
+
+**Popcorn Emergency Broadcast:**
+- Full-screen takeover with emergency bars
+- Animated popcorn icon
+- Real-time responder status updates
+- Popcorn kernel background animation
+
+### Installation
+
+1. Create `otychat-extension/` folder with structure above
+2. Download `socket.io.min.js` from CDN into `lib/`
+3. Create icon PNGs (16, 48, 128px)
+4. Chrome → `chrome://extensions/` → Developer Mode → Load Unpacked
+5. Select the folder
+
+### Popup Configuration
+
+- Server URL input (default: `http://localhost:3000`)
+- "Save & Connect" button
+- "Test Emojis" button (fires all 6 animation patterns)
+
+---
+
 ## Post-V1 Ideas
 
-- Display overlay for presentation screen
 - Admin panel for moderating questions
 - Pokémon trading between users
 - Custom emoji upload
-- Polls and voting
 - End-of-night awards ceremony
 - Mr. Cheese hardware integration

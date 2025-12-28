@@ -12,6 +12,7 @@ const path = require('path');
 const db = require('./db');
 const pokemon = require('./pokemon');
 const achievements = require('./achievements');
+const push = require('./push');
 
 // ============================================
 // SERVER SETUP
@@ -28,6 +29,9 @@ const ADMIN_CODE = process.env.ADMIN_CODE || 'otyadmin';
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
+// Also serve emojis and avatars from client/public for Chrome extension
+app.use('/emojis', express.static(path.join(__dirname, 'client/public/emojis')));
+app.use('/avatars', express.static(path.join(__dirname, 'client/public/avatars')));
 app.use(express.json());
 
 // ============================================
@@ -138,6 +142,59 @@ app.post('/api/test/spawn', async (req, res) => {
     message: `Spawned ${spawnData.pokemonName}${spawnData.isShiny ? ' ✨' : ''} for ${username}`,
     spawn: spawnData
   });
+});
+
+// ============================================
+// PUSH NOTIFICATION ROUTES
+// ============================================
+
+// Get VAPID public key for client subscription
+app.get('/api/push/vapid-key', (req, res) => {
+  const publicKey = push.getPublicVapidKey();
+  if (!publicKey) {
+    return res.status(503).json({ error: 'Push notifications not configured' });
+  }
+  res.json({ publicKey });
+});
+
+// Subscribe to push notifications
+app.post('/api/push/subscribe', (req, res) => {
+  const { userId, subscription } = req.body;
+
+  if (!userId || !subscription) {
+    return res.status(400).json({ error: 'userId and subscription required' });
+  }
+
+  if (!subscription.endpoint || !subscription.keys?.p256dh || !subscription.keys?.auth) {
+    return res.status(400).json({ error: 'Invalid subscription format' });
+  }
+
+  try {
+    const result = db.savePushSubscription(userId, subscription);
+    console.log(`[Push] User ${userId} subscribed to push notifications`);
+    res.json({ success: true, subscription: result });
+  } catch (error) {
+    console.error('[Push] Subscribe error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Unsubscribe from push notifications
+app.delete('/api/push/unsubscribe', (req, res) => {
+  const { endpoint } = req.body;
+
+  if (!endpoint) {
+    return res.status(400).json({ error: 'endpoint required' });
+  }
+
+  try {
+    db.removePushSubscription(endpoint);
+    console.log(`[Push] Subscription removed`);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[Push] Unsubscribe error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ============================================
@@ -607,15 +664,12 @@ io.on('connection', (socket) => {
     // Add XP
     addUserXP(socket, socket.data.userId, XP_REWARDS.emoji);
 
+    // Broadcast to all clients including display (io.emit covers everyone)
     io.emit('emoji-blast', {
       emoji,
       username: socket.data.username
     });
-
-    emitToDisplay('emoji-blast', {
-      emoji,
-      username: socket.data.username
-    });
+    // Note: No separate emitToDisplay needed - io.emit already reaches display sockets
 
     checkAndEmitAchievements(socket, socket.data.userId);
   });
@@ -710,13 +764,24 @@ io.on('connection', (socket) => {
       .find(([_, data]) => data.username === to);
 
     if (recipientEntry) {
-      const [recipientSocketId] = recipientEntry;
+      const [recipientSocketId, recipientData] = recipientEntry;
       io.to(recipientSocketId).emit('dm-received', {
         from: socket.data.username,
         text,
         drawing,
         timestamp: Date.now()
       });
+
+      // Send push notification to recipient
+      if (recipientData.userId) {
+        const notifBody = drawing ? `${socket.data.username} sent you a drawing` : text;
+        push.sendNotification(recipientData.userId, {
+          title: `DM from ${socket.data.username}`,
+          body: notifBody.length > 100 ? notifBody.slice(0, 97) + '...' : notifBody,
+          tag: `dm-${socket.data.username}`,
+          url: '/dms'
+        });
+      }
 
       // Add XP
       addUserXP(socket, socket.data.userId, XP_REWARDS.dm);

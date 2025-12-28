@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import ProfilePicSelector from './ProfilePicSelector';
 import StatusEditor from './StatusEditor';
 import { loadFavorites, saveFavorites, getEmojiUrl, CUSTOM_EMOJI_IDS, UNICODE_EMOJIS } from '../data/emoji-data';
+import { usePushNotifications } from '../../hooks/usePushNotifications';
+import { useSocket } from '../../contexts/SocketContext';
 
 interface SettingsProps {
   onBack: () => void;
@@ -22,6 +24,10 @@ const THEMES = [
 ];
 
 export default function Settings({ onBack, onThemeChange, currentTheme = 'gradient', profilePic, onProfilePicChange, status, onStatusChange }: SettingsProps) {
+  const { user } = useSocket();
+  const userId = user?.id || null;
+  const { isSupported, isSubscribed, isLoading, permission, subscribe, unsubscribe } = usePushNotifications(userId);
+
   const [theme, setTheme] = useState(currentTheme);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [showEmojiEditor, setShowEmojiEditor] = useState(false);
@@ -348,6 +354,89 @@ export default function Settings({ onBack, onThemeChange, currentTheme = 'gradie
           </div>
         </section>
 
+        {/* Push Notifications */}
+        {isSupported && (
+          <section>
+            <div className="p-5 rounded-3xl" style={{
+              background: 'white',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)'
+            }}>
+              <h3 className="mb-4" style={{
+                fontFamily: 'Fredoka, sans-serif',
+                fontSize: '16px',
+                color: 'var(--text)',
+                fontWeight: '700'
+              }}>
+                🔔 Push Notifications
+              </h3>
+
+              <p className="mb-4" style={{
+                fontSize: '13px',
+                color: 'var(--text-muted)',
+                lineHeight: '1.5'
+              }}>
+                Get notified when you receive DMs or emergency alerts, even when the app is closed.
+              </p>
+
+              {permission === 'denied' ? (
+                <div className="p-4 rounded-2xl" style={{
+                  background: 'var(--bg-secondary)',
+                }}>
+                  <p style={{
+                    fontSize: '14px',
+                    color: 'var(--text-muted)',
+                    textAlign: 'center',
+                  }}>
+                    ⚠️ Notifications are blocked. Enable them in your browser settings.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex justify-between items-center p-4 rounded-2xl" style={{
+                  background: 'var(--bg-secondary)'
+                }}>
+                  <div>
+                    <span style={{
+                      fontSize: '14px',
+                      fontFamily: 'Nunito, sans-serif',
+                      fontWeight: '600',
+                      display: 'block'
+                    }}>
+                      Push Notifications
+                    </span>
+                    <span style={{
+                      fontSize: '12px',
+                      color: 'var(--text-muted)'
+                    }}>
+                      {isSubscribed ? 'Enabled' : 'Disabled'}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => isSubscribed ? unsubscribe() : subscribe()}
+                    disabled={isLoading}
+                    className="px-5 py-2 rounded-xl transition-all transform hover:scale-105"
+                    style={{
+                      background: isSubscribed
+                        ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                        : 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)',
+                      color: 'white',
+                      fontFamily: 'Fredoka, sans-serif',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      border: 'none',
+                      boxShadow: isSubscribed
+                        ? '0 2px 8px rgba(16, 185, 129, 0.4)'
+                        : '0 2px 8px rgba(236, 72, 153, 0.4)',
+                      opacity: isLoading ? 0.7 : 1
+                    }}
+                  >
+                    {isLoading ? '...' : isSubscribed ? 'ON' : 'OFF'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
         {/* About */}
         <section>
           <div className="p-5 rounded-3xl text-center" style={{
@@ -359,7 +448,7 @@ export default function Settings({ onBack, onThemeChange, currentTheme = 'gradie
               color: 'var(--text-muted)',
               marginBottom: '8px'
             }}>
-              HangChat v1.0.0
+              OtyChat v1.0.0
             </p>
             <p style={{
               fontSize: '11px',

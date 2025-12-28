@@ -1,0 +1,419 @@
+/* ============================================
+   OtyChat Overlay - Chrome Extension Styles
+   ============================================ */
+
+#otychat-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: none !important;
+  z-index: 2147483647 !important;
+  overflow: hidden !important;
+}
+
+/* ============================================
+   EMOJI BASE STYLES
+   ============================================ */
+
+.otychat-emoji {
+  position: absolute !important;
+  font-size: 56px !important;
+  line-height: 1 !important;
+  pointer-events: none !important;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)) !important;
+}
+
+.otychat-emoji img {
+  width: 56px !important;
+  height: 56px !important;
+  object-fit: contain !important;
+}
+
+/* ============================================
+   ANIMATION: Float Up (Classic)
+   ============================================ */
+
+.otychat-float-up {
+  animation: otychat-float-up 3.5s ease-out forwards !important;
+}
+
+@keyframes otychat-float-up {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(0.5) rotate(0deg);
+  }
+  10% {
+    transform: translateY(-20px) scale(1) rotate(-5deg);
+  }
+  30% {
+    transform: translateY(-120px) scale(1.1) rotate(5deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-280px) scale(1) rotate(-3deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-450px) scale(0.8) rotate(10deg);
+  }
+}
+
+/* ============================================
+   ANIMATION: Pop In
+   ============================================ */
+
+.otychat-pop-in {
+  animation: otychat-pop-in 2.5s ease-out forwards !important;
+}
+
+@keyframes otychat-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+  30% {
+    transform: scale(0.9);
+  }
+  45% {
+    transform: scale(1.1);
+  }
+  60% {
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+
+/* ============================================
+   ANIMATION: Bounce Across
+   ============================================ */
+
+.otychat-bounce-across {
+  animation: otychat-bounce-across 3s ease-in-out forwards !important;
+}
+
+@keyframes otychat-bounce-across {
+  0% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(25vw) translateY(-100px) rotate(90deg);
+  }
+  50% {
+    transform: translateX(50vw) translateY(0) rotate(180deg);
+  }
+  75% {
+    transform: translateX(75vw) translateY(-60px) rotate(270deg);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100vw) translateY(0) rotate(360deg);
+  }
+}
+
+/* ============================================
+   ANIMATION: Spiral Rise
+   ============================================ */
+
+.otychat-spiral-rise {
+  animation: otychat-spiral-rise 3.5s ease-out forwards !important;
+}
+
+@keyframes otychat-spiral-rise {
+  0% {
+    opacity: 1;
+    transform: translateY(0) translateX(0) rotate(0deg) scale(0.5);
+  }
+  20% {
+    transform: translateY(-100px) translateX(40px) rotate(120deg) scale(1);
+  }
+  40% {
+    transform: translateY(-200px) translateX(-40px) rotate(240deg) scale(1.1);
+  }
+  60% {
+    transform: translateY(-300px) translateX(30px) rotate(360deg) scale(1);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(-380px) translateX(-20px) rotate(450deg) scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-450px) translateX(0) rotate(540deg) scale(0.6);
+  }
+}
+
+/* ============================================
+   ANIMATION: Firework
+   ============================================ */
+
+.otychat-firework {
+  animation: otychat-firework-rise 0.6s ease-out forwards !important;
+}
+
+@keyframes otychat-firework-rise {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-40vh) scale(1);
+  }
+}
+
+.otychat-burst-particle {
+  position: absolute !important;
+  font-size: 32px !important;
+  animation: otychat-burst 1s ease-out forwards !important;
+}
+
+.otychat-burst-particle img {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+@keyframes otychat-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--burst-x), var(--burst-y)) scale(0.3);
+  }
+}
+
+/* ============================================
+   ANIMATION: Rain Down
+   ============================================ */
+
+.otychat-rain-down {
+  animation: otychat-rain-down 3s ease-in forwards !important;
+}
+
+@keyframes otychat-rain-down {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+  20% {
+    transform: translateY(20vh) rotate(10deg);
+  }
+  40% {
+    transform: translateY(40vh) rotate(-5deg);
+  }
+  60% {
+    transform: translateY(60vh) rotate(8deg);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(80vh) rotate(-3deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(15deg);
+  }
+}
+
+/* ============================================
+   POPCORN EMERGENCY
+   ============================================ */
+
+.otychat-popcorn-emergency {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+  display: none !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 999999 !important;
+}
+
+.otychat-popcorn-emergency.active {
+  display: flex !important;
+  animation: otychat-emergency-in 0.5s ease-out !important;
+}
+
+@keyframes otychat-emergency-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Emergency broadcast bars */
+.emergency-bars {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 60px !important;
+  display: flex !important;
+}
+
+.emergency-bars.top { top: 0 !important; }
+.emergency-bars.bottom { bottom: 0 !important; }
+
+.emergency-bars::before,
+.emergency-bars::after {
+  content: '' !important;
+  flex: 1 !important;
+  animation: otychat-bar-flash 0.5s infinite alternate !important;
+}
+
+.emergency-bars::before {
+  background: linear-gradient(90deg, #ff0000, #ff6600, #ffcc00) !important;
+}
+
+.emergency-bars::after {
+  background: linear-gradient(90deg, #ffcc00, #ff6600, #ff0000) !important;
+}
+
+@keyframes otychat-bar-flash {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* Emergency content */
+.emergency-content {
+  text-align: center !important;
+  z-index: 10 !important;
+}
+
+.emergency-content .popcorn-icon {
+  font-size: 120px !important;
+  animation: otychat-popcorn-bounce 0.5s ease-in-out infinite alternate !important;
+  filter: drop-shadow(0 0 30px rgba(255, 200, 0, 0.8)) !important;
+}
+
+@keyframes otychat-popcorn-bounce {
+  0% { transform: scale(1) rotate(-5deg); }
+  100% { transform: scale(1.1) rotate(5deg); }
+}
+
+.emergency-content h1 {
+  font-family: 'Impact', 'Arial Black', sans-serif !important;
+  font-size: 72px !important;
+  color: #fff !important;
+  text-shadow:
+    0 0 20px #ff0000,
+    0 0 40px #ff6600,
+    4px 4px 0 #000 !important;
+  margin: 20px 0 !important;
+  letter-spacing: 4px !important;
+  animation: otychat-text-pulse 1s ease-in-out infinite !important;
+}
+
+@keyframes otychat-text-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.emergency-content .host-name {
+  font-family: 'Arial', sans-serif !important;
+  font-size: 32px !important;
+  color: #ffcc00 !important;
+  margin-bottom: 30px !important;
+}
+
+/* Responders */
+.responders {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  max-width: 800px !important;
+}
+
+.responder {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 50px !important;
+  padding: 12px 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  transition: all 0.3s ease !important;
+}
+
+.responder.pending { opacity: 0.6 !important; }
+
+.responder.accepted {
+  background: rgba(16, 185, 129, 0.3) !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.5) !important;
+}
+
+.responder.accepted.pop-in {
+  animation: otychat-responder-pop 0.5s ease-out !important;
+}
+
+@keyframes otychat-responder-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.responder.declined {
+  opacity: 0.4 !important;
+  border-color: #ef4444 !important;
+}
+
+.responder .status-icon { font-size: 24px !important; }
+
+.responder .name {
+  font-family: 'Arial', sans-serif !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  color: #fff !important;
+}
+
+/* Popcorn kernels background */
+.popcorn-kernels {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+
+.kernel {
+  position: absolute !important;
+  font-size: 36px !important;
+  animation: otychat-kernel-pop 2s ease-out forwards !important;
+  bottom: 60px !important;
+}
+
+@keyframes otychat-kernel-pop {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(0) rotate(0deg);
+  }
+  20% {
+    transform: translateY(-30vh) scale(1) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80vh) scale(0.5) rotate(720deg);
+  }
+}

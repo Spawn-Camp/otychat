@@ -185,6 +185,20 @@ async function initDatabase() {
       FOREIGN KEY (from_user_id) REFERENCES users(id),
       FOREIGN KEY (to_user_id) REFERENCES users(id)
     );
+
+    -- Push notification subscriptions
+    CREATE TABLE IF NOT EXISTS push_subscriptions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      endpoint TEXT NOT NULL UNIQUE,
+      keys_p256dh TEXT NOT NULL,
+      keys_auth TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+
+    -- Index for quick lookup by user
+    CREATE INDEX IF NOT EXISTS idx_push_subscriptions_user ON push_subscriptions(user_id);
   `);
 
   // Migration: Add new columns to existing tables if they don't exist
@@ -788,6 +802,43 @@ function getKudosSent(userId) {
 }
 
 // ============================================
+// PUSH SUBSCRIPTION FUNCTIONS
+// ============================================
+
+function savePushSubscription(userId, subscription) {
+  // subscription has { endpoint, keys: { p256dh, auth } }
+  const { endpoint, keys } = subscription;
+
+  // Upsert: if endpoint exists, update user_id and keys; otherwise insert
+  runSql(`
+    INSERT INTO push_subscriptions (user_id, endpoint, keys_p256dh, keys_auth)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT(endpoint) DO UPDATE SET
+      user_id = excluded.user_id,
+      keys_p256dh = excluded.keys_p256dh,
+      keys_auth = excluded.keys_auth
+  `, [userId, endpoint, keys.p256dh, keys.auth]);
+
+  return queryOne(`SELECT * FROM push_subscriptions WHERE endpoint = ?`, [endpoint]);
+}
+
+function removePushSubscription(endpoint) {
+  return runSql(`DELETE FROM push_subscriptions WHERE endpoint = ?`, [endpoint]);
+}
+
+function getUserPushSubscriptions(userId) {
+  return queryAll(`SELECT * FROM push_subscriptions WHERE user_id = ?`, [userId]);
+}
+
+function getPushSubscriptionByEndpoint(endpoint) {
+  return queryOne(`SELECT * FROM push_subscriptions WHERE endpoint = ?`, [endpoint]);
+}
+
+function getAllPushSubscriptions() {
+  return queryAll(`SELECT * FROM push_subscriptions`);
+}
+
+// ============================================
 // EXPORTED API
 // ============================================
 
@@ -881,7 +932,14 @@ module.exports = {
   getKudosSent,
 
   // Leaderboards
-  getLeaderboards
+  getLeaderboards,
+
+  // Push Subscriptions
+  savePushSubscription,
+  removePushSubscription,
+  getUserPushSubscriptions,
+  getPushSubscriptionByEndpoint,
+  getAllPushSubscriptions
 };
 
 // ============================================

@@ -6,6 +6,7 @@ import FeedTab from './tabs/FeedTab';
 import MeTab from './tabs/MeTab';
 import PokemonTab from './tabs/PokemonTab';
 import AnimatedBackground from './AnimatedBackground';
+import NotificationPrompt from './NotificationPrompt';
 
 type Tab = 'feed' | 'react' | 'pokemon' | 'dms' | 'me';
 
@@ -16,6 +17,7 @@ interface MainAppProps {
 export default function MainApp({ username }: MainAppProps) {
   const { unreadDMCount, user } = useSocket();
   const profilePic = user?.odProfilePic || '👤';
+  const userId = user?.id || null;
   const [activeTab, setActiveTab] = useState<Tab>('feed');
   const [backgroundTheme, setBackgroundTheme] = useState<'waves' | 'zigzag' | 'dots' | 'bubbles' | 'gradient'>('gradient');
 
@@ -86,6 +88,9 @@ export default function MainApp({ username }: MainAppProps) {
           isProfilePic
         />
       </div>
+
+      {/* Push Notification Prompt */}
+      <NotificationPrompt userId={userId} />
     </div>
   );
 }
